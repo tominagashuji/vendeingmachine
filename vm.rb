@@ -33,12 +33,6 @@ class VendingMachine
       @slot_money = 0
     end
 
-    # 投入金額の総計を取得できる。
-    def current_slot_money
-      # 自動販売機に入っているお金を表示する
-      puts @slot_money
-    end
-  
     # 10円玉、50円玉、100円玉、500円玉、1000円札を１つずつ投入できる。
     # 投入は複数回できる。
     def slot_money(money)
@@ -78,29 +72,62 @@ class VendingMachine
     end
 
     def check(slot_money,drink)
-        puts "確認するよ！！"
-        puts slot_money
-        puts drink
-        if slot_money >= drink[:price] && drink[:stock] > 0
-            slot_money = slot_money - drink[:price]
-            drink[:stock] -= 1
-        end
+      puts "飲み物を購入できるか確認するよ！！"
+      puts "投入金額は#{slot_money}円です"
+      puts drink
+      
+      uriage_kingaku = 0
+      # コーラ販売可否チェック
+      if slot_money >= drink[:price] && drink[:stock] > 0
+      # 購入成功
+        puts "買えます！"
+        # 投入金額からコーラ代を引く
+        slot_money = slot_money - drink[:price]
+      # 投入金額からコーラ代を引く
+        drink[:stock] -= 1
+      # コーラの販売金額を @uriage_kingaku に加算
+        self.sale(drink)
+      # コーラの販売金額を @uriage_kingaku に加算
+        self.refund(slot_money)
+      else
+        puts "買えません！"
+        self.refund(slot_money)
+      end
 
-        puts slot_money
-        puts drink
-        return [slot_money,drink]
+      puts "現在自販機に入っている金額は#{slot_money}円です"
+      puts "#{drink[:name]} の在庫は #{drink[:stock]}本です"
+      return [slot_money,drink]
+    end
+
+    # 売り上げ金額の表示
+    def sale(drink)
+      uriage_kingaku = 0
+      uriage_kingaku += drink[:price]
+      puts "売り上げ金額は #{uriage_kingaku} です!!"
+    end
+
+    # お釣り操作
+    def refund(slot_money)
+      puts "お釣りは #{slot_money} です!!"
+    end
+
+  end
+
+  class Money
+    # 投入金額の総計を取得できる。
+    def current_slot_money
+      # 自動販売機に入っているお金を表示する
+      slot_money = gets.to_i
+      return slot_money
     end
   end
+
 
 vm = VendingMachine.new
 dr = Drink.new
 pc = Purchase.new
+mn = Money.new
 
-puts "投入金額は！！"
-puts vm.current_slot_money
-puts dr.current_slot_drink
+puts "お金入れて！！"
+pc.check(mn.current_slot_money,dr.current_slot_drink)
 
-puts "処理開始！！"
-pc.check(vm.slot_money(1000),dr.current_slot_drink)
-puts slot_money
-puts drink
